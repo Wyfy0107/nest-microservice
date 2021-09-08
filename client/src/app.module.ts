@@ -4,7 +4,6 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 import { ConfigService } from './config/config.service';
 import { AppConfigModule as ConfigModule } from './config/config.module';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [ConfigModule],
@@ -26,7 +25,6 @@ import { AppService } from './app.service';
       },
       inject: [ConfigService],
     },
-    AppService,
   ],
 })
 export class AppModule {}

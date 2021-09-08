@@ -1,33 +1,16 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { MailsService } from './mails.service';
+import { Controller, Inject } from '@nestjs/common';
+import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 
 @Controller()
 export class MailsController {
-  constructor(private readonly mailsService: MailsService) {}
-
-  @MessagePattern('createMail')
-  create(@Payload() createMailDto: any) {
-    return this.mailsService.create(createMailDto);
-  }
-
-  @MessagePattern('findAllMails')
-  findAll() {
-    return this.mailsService.findAll();
-  }
+  constructor(@Inject('USER_SERVICE') private userService: ClientProxy) {}
 
   @MessagePattern('findOneMail')
-  findOne(@Payload() payload: { msg: string }) {
-    return `msg from mail service and ${payload.msg}`;
-  }
+  async findOne(@Payload() payload: { msg: string }) {
+    const observable = this.userService.send('findOneUser', {}).pipe();
+    const msgFromUserSvc = await lastValueFrom(observable);
 
-  @MessagePattern('updateMail')
-  update(@Payload() updateMailDto: any) {
-    return this.mailsService.update(updateMailDto.id, updateMailDto);
-  }
-
-  @MessagePattern('removeMail')
-  remove(@Payload() id: number) {
-    return this.mailsService.remove(id);
+    return `msg from mail service and ${payload.msg} ${msgFromUserSvc}`;
   }
 }
