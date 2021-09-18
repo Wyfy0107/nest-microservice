@@ -10,7 +10,7 @@ This project is an attempt to learn how to create a microservice architecture wi
 
 ## Service Discovery
 
-Service discovery is the way that a pod can discover how to communicate to another pod. This project is using Hashicorp Consul to create a Consul server for discoveries. Each pod will be connected will a Consul agent that handles the communication between pods
+Service discovery is the way that a pod can discover how to communicate with another pod. This project is using Hashicorp Consul to create a Consul server for discoveries. Each pod will be connected will a sidecar proxy that handles the communication between pods
 
 ## Kubernetes
 
