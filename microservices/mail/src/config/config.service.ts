@@ -9,8 +9,8 @@ export class ConfigService {
   get userService(): ClientOptions {
     return {
       options: {
-        port: 3000,
-        host: 'localhost',
+        port: 80,
+        host: 'nest-ms-user.default.svc',
       },
       transport: Transport.TCP,
     };
@@ -19,8 +19,8 @@ export class ConfigService {
   get mailService(): ClientOptions {
     return {
       options: {
-        port: 5000,
-        host: 'localhost',
+        port: 80,
+        host: 'nest-ms-mail.default.svc',
       },
       transport: Transport.TCP,
     };

@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: nest-ms-client
+spec:
+  host: nest-ms-client
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: nest-ms-user
+spec:
+  host: nest-ms-user
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+  subsets:
+    - name: v4
+      labels:
+        version: v4
+    - name: v5
+      labels:
+        version: v5

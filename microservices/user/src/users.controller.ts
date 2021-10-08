@@ -7,6 +7,6 @@ export class UsersController {
 
   @MessagePattern('findOneUser')
   findOne() {
-    return 'this is from user service';
+    return 'this is from user service v5';
   }
 }

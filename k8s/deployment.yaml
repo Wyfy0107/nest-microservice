@@ -12,17 +12,16 @@ spec:
   selector:
     matchLabels:
       app: nest-ms-client
+      version: v1
   template:
     metadata:
-      annotations:
-        'consul.hashicorp.com/connect-inject': 'true'
-        'consul.hashicorp.com/connect-service-upstreams': 'nest-ms-mail:5000'
       labels:
         app: nest-ms-client
+        version: v1
     spec:
       containers:
         - name: client
-          image: wyfy/nest-ms-client:2.0
+          image: wyfy/nest-ms-client:v2
           ports:
             - containerPort: 5001
           imagePullPolicy: Always
@@ -35,7 +34,8 @@ spec:
   selector:
     app: nest-ms-client
   ports:
-    - port: 80
+    - name: tcp
+      port: 80
       targetPort: 5001
   type: LoadBalancer
 ---
@@ -47,22 +47,47 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nest-ms-user
+  name: nest-ms-user-v4
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: nest-ms-user
+      version: v4
   template:
     metadata:
-      annotations:
-        'consul.hashicorp.com/connect-inject': 'true'
       labels:
         app: nest-ms-user
+        version: v4
     spec:
       containers:
         - name: user
-          image: wyfy/nest-ms-user
+          image: wyfy/nest-ms-user:v4
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nest-ms-user-v5
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nest-ms-user
+      version: v5
+      status: delay
+  template:
+    metadata:
+      labels:
+        app: nest-ms-user
+        version: v5
+        status: delay
+    spec:
+      containers:
+        - name: user
+          image: wyfy/nest-ms-user:v5
           ports:
             - containerPort: 3000
           imagePullPolicy: Always
@@ -71,11 +96,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nest-ms-user
+  labels:
+    app: nest-ms-user-service
 spec:
   selector:
     app: nest-ms-user
   ports:
-    - port: 80
+    - name: tcp
+      port: 80
       targetPort: 3000
   type: LoadBalancer
 ---
@@ -92,7 +120,8 @@ spec:
   selector:
     app: nest-ms-mail
   ports:
-    - port: 80
+    - name: tcp
+      port: 80
       targetPort: 5000
   type: LoadBalancer
 ---
@@ -107,15 +136,12 @@ spec:
       app: nest-ms-mail
   template:
     metadata:
-      annotations:
-        'consul.hashicorp.com/connect-inject': 'true'
-        'consul.hashicorp.com/connect-service-upstreams': 'nest-ms-user:3000'
       labels:
         app: nest-ms-mail
     spec:
       containers:
         - name: mail
-          image: wyfy/nest-ms-mail
+          image: wyfy/nest-ms-mail:v2
           ports:
             - containerPort: 5000
           imagePullPolicy: Always

@@ -1,0 +1,51 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: website-gateway
+spec:
+  selector:
+    # Which pods we want to expose as Istio router
+    # This label points to the default one installed from file istio-demo.yaml
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: tcp
+        protocol: TCP
+      # Here we specify which Kubernetes service names
+      # we want to serve through this Gateway
+      hosts:
+        - nest-ms-client.default.svc
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nest-ms-client
+spec:
+  hosts:
+    - nest-ms-client.default.svc
+  gateways:
+    - website-gateway
+  tcp:
+    - route:
+        - destination:
+            host: nest-ms-client
+            subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nest-ms-user
+spec:
+  hosts:
+    - nest-ms-user
+  tcp:
+    - route:
+        - destination:
+            host: nest-ms-user
+            subset: v4
+          weight: 50
+        - destination:
+            host: nest-ms-user
+            subset: v5
+          weight: 50
